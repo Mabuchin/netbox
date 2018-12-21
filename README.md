@@ -1,3 +1,13 @@
+### Restore DB dump
+```aidl
+sudo -u postgres psql netbox < netbox.sql
+```
+
+### Backup DB
+```aidl
+sudo -u postgres pg_dump netbox > netbox.sql
+```
+
 ![NetBox](docs/netbox_logo.png "NetBox logo")
 
 NetBox is an IP address management (IPAM) and data center infrastructure

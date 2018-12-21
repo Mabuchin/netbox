@@ -79,6 +79,7 @@ CSRF_TRUSTED_ORIGINS = ALLOWED_HOSTS
 LDAP_IGNORE_CERT_ERRORS = False
 try:
     from netbox.ldap_config import *
+
     LDAP_CONFIGURED = True
 except ImportError:
     LDAP_CONFIGURED = False
@@ -88,6 +89,7 @@ if LDAP_CONFIGURED:
     try:
         import ldap
         import django_auth_ldap
+
         # Prepend LDAPBackend to the default ModelBackend
         AUTHENTICATION_BACKENDS = [
             'django_auth_ldap.backend.LDAPBackend',
@@ -156,6 +158,8 @@ INSTALLED_APPS = [
     'utilities',
     'virtualization',
     'drf_yasg',
+    'django_extensions',
+    'bgp',  # this app is custom extension app
 ]
 
 # Only load django-rq if the webhook backend is enabled
@@ -309,13 +313,11 @@ SWAGGER_SETTINGS = {
     'VALIDATOR_URL': None,
 }
 
-
 # Django debug toolbar
 INTERNAL_IPS = (
     '127.0.0.1',
     '::1',
 )
-
 
 try:
     HOSTNAME = socket.gethostname()
