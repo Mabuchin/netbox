@@ -12,3 +12,5 @@ fabfile.py
 gunicorn_config.py
 *.log
 configuration.py
+.DS_Store
+.vagrant/
