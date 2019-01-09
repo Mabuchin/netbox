@@ -1,11 +1,13 @@
 from django.db import models
 from ipam.constants import *
-from bgp.constants import *
+from .constants import *
+from .fields import ASNField
 from ipam.fields import IPNetworkField, IPAddressField
 from extras.models import CustomFieldModel
 from utilities.models import ChangeLoggedModel
 from django.utils.encoding import python_2_unicode_compatible
 from django.urls import reverse
+from taggit.managers import TaggableManager
 
 
 @python_2_unicode_compatible
@@ -52,17 +54,15 @@ class Neighbor(ChangeLoggedModel, CustomFieldModel):
         help_text='IPv4 or IPv6 router-id',
         blank=True
     )
-    local_asn = models.PositiveIntegerField(
-        verbose_name='LocalASN',
-        blank=False,
-        null=False,
-        help_text='The neighbor bgp autonomous number'
+    local_asn = ASNField(
+        blank=True,
+        null=True,
+        verbose_name='LocalASN'
     )
-    remote_asn = models.PositiveIntegerField(
-        verbose_name='RemoteASN',
-        blank=False,
-        null=False,
-        help_text='The neighbor bgp autonomous number'
+    remote_asn = ASNField(
+        blank=True,
+        null=True,
+        verbose_name='RemoteASN'
     )
     vrf = models.ForeignKey(
         to='ipam.VRF',
@@ -113,6 +113,9 @@ class Neighbor(ChangeLoggedModel, CustomFieldModel):
     #    related_name='export_policy',
     #    blank=True
     # )
+    tags = TaggableManager()
+    csv_headers = ['neighbor', 'descr', 'vrf', 'local_asn', 'remote_asn', 'state', 'advertised_routes',
+                   'received_routes', 'accepted_receive_routes']
 
     class Meta:
         ordering = ['remote_asn', 'local_asn', 'neighbor_address', 'interface']
@@ -130,6 +133,19 @@ class Neighbor(ChangeLoggedModel, CustomFieldModel):
         if self.name and self.rd:
             return "{}({},{})".format(self.neighbor_address, self.remote_asn, self.description)
         return None
+
+    def to_csv(self):
+        return (
+            self.neighbor_address,
+            self.description,
+            self.vrf,
+            self.local_asn,
+            self.remote_asn,
+            self.state.state,
+            self.state.advertised_routes,
+            self.state.received_routes,
+            self.state.accepted_receive_routes,
+        )
 
 
 class BGPRoutingPolicy(ChangeLoggedModel):
