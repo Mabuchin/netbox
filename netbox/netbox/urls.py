@@ -43,6 +43,9 @@ _patterns = [
     url(r'^user/', include('users.urls')),
     url(r'^virtualization/', include('virtualization.urls')),
 
+    # Custom Apps
+    url(r'^bgp/', include('bgp.urls')),
+
     # API
     url(r'^api/$', APIRootView.as_view(), name='api-root'),
     url(r'^api/circuits/', include('circuits.api.urls')),
